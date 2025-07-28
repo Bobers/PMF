@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CheckCircle2, Circle, ChevronRight, ChevronDown, Target, Search, Lightbulb, TrendingUp, BookOpen, Clock, Award, FileText, Download, Edit2, ExternalLink, BarChart3 } from 'lucide-react';
+import { Target, CheckCircle2, Circle, ChevronRight, ChevronDown, Search, Lightbulb, TrendingUp, Award, Clock, FileText, BookOpen, ExternalLink, BarChart3, Download, Edit2 } from 'lucide-react';
 
 const EMUPrototype = () => {
   // Product Setup State

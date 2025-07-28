@@ -1,7 +1,7 @@
 'use client';
 
-import EMUPrototype from '@/components/EMUPrototype';
+import EMUDashboard from '@/components/EMUDashboard';
 
 export default function Home() {
-  return <EMUPrototype />;
+  return <EMUDashboard />;
 }

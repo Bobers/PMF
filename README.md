@@ -1,31 +1,39 @@
 # EMU - Evolving Marketing Understanding 🦘
 
-A comprehensive step-by-step guide to finding Product-Market Fit through systematic marketing validation. EMU provides a structured framework with actionable tasks, templates, and resources to help startups build effective go-to-market strategies.
+AI-powered PMF validation for non-marketers. EMU uses intelligent extraction to analyze your product and automatically generate a validated foundation for your go-to-market strategy, then guides you through a systematic journey to Product-Market Fit.
 
 ## Features
 
-### 🚀 Product Onboarding
-- Multi-category product classification (B2B SaaS, B2C App, Marketplace, etc.)
-- Stage-based customization (Idea, Prototype, Beta, Launched)
-- Target problem definition
+### 🚀 AI-Powered Foundation Extraction
+- Automatically analyzes your product inputs
+- Generates validated pain points with severity scores
+- Identifies target audience segments with characteristics
+- Maps current solutions and their shortcomings
+- Explains why your problem matters with market data
 
-### 📊 4-Phase Marketing Journey
-1. **Marketing Foundation & Research** - Understand your market, customers, and competition
-2. **Strategy Development** - Define positioning, messaging, and go-to-market approach
-3. **Execution Planning** - Plan channels, campaigns, and resources
-4. **Launch & Optimization** - Execute and optimize based on data
+### 🔄 Interactive Validation Flow
+- Review and edit AI-generated insights
+- Re-roll individual sections for alternative perspectives
+- Lock validated sections to build your foundation
+- Graceful zoom in/out between overview and detail views
 
-### 📋 Jobs-to-be-Done Framework
-- Structured tasks for each marketing job
-- Clear Definition of Done criteria
-- Deliverables checklist
-- Resource templates and guides
+### 📊 5-Phase PMF Journey
+1. **Foundation** - AI-powered extraction and validation of core elements
+2. **Market Research** - Understand your market, customers, and competition
+3. **Strategy Development** - Define positioning, messaging, and pricing
+4. **Execution Planning** - Plan channels, campaigns, and resources
+5. **Launch & Optimization** - Execute and iterate based on data
 
-### 📈 Progress Tracking
-- Visual timeline with phase completion
-- Task-level progress tracking
-- Job completion validation
-- Output documentation for each deliverable
+### 🎯 Smart Progress System
+- Foundation gates access to other phases
+- Visual progress indicators at multiple levels
+- Section-by-section validation tracking
+- Locked phases show requirements clearly
+
+### 📈 Three-Level Navigation
+- **Onboarding**: Input your product details
+- **Dashboard**: Bird's-eye view of your PMF journey
+- **Detail View**: Deep dive into foundation elements
 
 ## Tech Stack
 
