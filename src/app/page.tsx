@@ -1,7 +1,7 @@
 'use client';
 
-import EMUDashboardV2 from '@/components/EMUDashboardV2';
+import EMUDashboardV3 from '@/components/EMUDashboardV3';
 
 export default function Home() {
-  return <EMUDashboardV2 />;
+  return <EMUDashboardV3 />;
 }
