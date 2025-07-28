@@ -264,6 +264,10 @@ const EMUDashboardV2 = () => {
     setFoundationStatus('locked');
   };
 
+  const unlockFoundation = () => {
+    setFoundationStatus('validating');
+  };
+
   // Individual item functions
   const regeneratePainPoint = async (id: string) => {
     setPainPoints(prev => prev.map(p => 
@@ -515,8 +519,15 @@ const EMUDashboardV2 = () => {
                   <ChevronRight className="w-5 h-5 rotate-180" />
                 </button>
                 <div>
-                  <h1 className="text-xl font-bold">Foundation Validation</h1>
-                  <p className="text-sm text-gray-400">Review and refine the extracted elements</p>
+                  <h1 className="text-xl font-bold">
+                    Foundation Validation
+                    {foundationStatus === 'locked' && (
+                      <span className="ml-2 px-2 py-1 bg-green-600 text-xs rounded-full">Locked</span>
+                    )}
+                  </h1>
+                  <p className="text-sm text-gray-400">
+                    {foundationStatus === 'locked' ? 'Foundation is locked - you can still edit individual items' : 'Review and refine the extracted elements'}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
@@ -524,7 +535,30 @@ const EMUDashboardV2 = () => {
                   <p className="text-sm text-gray-400">Progress</p>
                   <p className="text-2xl font-bold">{getFoundationProgress()}%</p>
                 </div>
-                {allFoundationLocked() && (
+                {foundationStatus === 'locked' && (
+                  <>
+                    <button
+                      onClick={() => {
+                        setPainPoints(prev => prev.map(p => ({ ...p, isLocked: false })));
+                        setAudiences(prev => prev.map(a => ({ ...a, isLocked: false })));
+                        setSolutions(prev => prev.map(s => ({ ...s, isLocked: false })));
+                        setWhyItMatters(prev => ({ ...prev, isLocked: false }));
+                        setFoundationStatus('validating');
+                      }}
+                      className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center gap-2"
+                    >
+                      <Unlock className="w-4 h-4" />
+                      Unlock All
+                    </button>
+                    <button
+                      onClick={() => setView('dashboard')}
+                      className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition-colors"
+                    >
+                      Continue
+                    </button>
+                  </>
+                )}
+                {foundationStatus === 'validating' && allFoundationLocked() && (
                   <button
                     onClick={() => setView('dashboard')}
                     className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition-colors"
@@ -970,7 +1004,7 @@ const EMUDashboardV2 = () => {
           </div>
 
           {/* Quick Actions */}
-          {!allFoundationLocked() && (
+          {foundationStatus === 'validating' && !allFoundationLocked() && (
             <div className="bg-yellow-900/20 border border-yellow-800 rounded-lg p-4">
               <div className="flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 text-yellow-500 mt-0.5" />
@@ -986,6 +1020,20 @@ const EMUDashboardV2 = () => {
                 >
                   Lock All
                 </button>
+              </div>
+            </div>
+          )}
+          
+          {foundationStatus === 'locked' && (
+            <div className="bg-green-900/20 border border-green-800 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm text-green-300">Foundation is locked</p>
+                  <p className="text-sm text-gray-400 mt-1">
+                    You can still edit individual items or unlock all sections to make broader changes.
+                  </p>
+                </div>
               </div>
             </div>
           )}
@@ -1075,11 +1123,11 @@ const EMUDashboardV2 = () => {
           foundationStatus === 'locked' ? 'border-green-600' : 'border-gray-800'
         }`}>
           <button
-            onClick={() => foundationStatus === 'validating' && setView('foundation-detail')}
+            onClick={() => (foundationStatus === 'validating' || foundationStatus === 'locked') && setView('foundation-detail')}
             className={`w-full p-6 text-left ${
-              foundationStatus === 'validating' ? 'hover:bg-gray-800/50 cursor-pointer' : ''
+              (foundationStatus === 'validating' || foundationStatus === 'locked') ? 'hover:bg-gray-800/50 cursor-pointer' : ''
             } transition-colors`}
-            disabled={foundationStatus !== 'validating'}
+            disabled={foundationStatus !== 'validating' && foundationStatus !== 'locked'}
           >
             <div className="flex items-start justify-between">
               <div className="flex items-start gap-4">
@@ -1136,9 +1184,21 @@ const EMUDashboardV2 = () => {
                   
                   {foundationStatus === 'locked' && (
                     <div className="mt-4 p-3 bg-green-900/20 border border-green-800 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle2 className="w-5 h-5 text-green-500" />
-                        <span className="text-sm text-green-300">Foundation validated and locked</span>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-5 h-5 text-green-500" />
+                          <span className="text-sm text-green-300">Foundation validated and locked</span>
+                        </div>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            unlockFoundation();
+                          }}
+                          className="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-xs transition-colors flex items-center gap-1"
+                        >
+                          <Unlock className="w-3 h-3" />
+                          Edit
+                        </button>
                       </div>
                     </div>
                   )}
@@ -1156,7 +1216,13 @@ const EMUDashboardV2 = () => {
                   </>
                 )}
                 {foundationStatus === 'locked' && (
-                  <CheckCircle2 className="w-8 h-8 text-green-500" />
+                  <>
+                    <div className="text-right">
+                      <p className="text-2xl font-bold">100%</p>
+                      <p className="text-xs text-gray-500">Complete</p>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-gray-400" />
+                  </>
                 )}
               </div>
             </div>
