@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PMF Validator - Product-Market Fit Testing Tool",
-  description: "Validate your product-market fit with our interactive hypothesis generator and validation framework",
+  title: "EMU - Evolving Marketing Understanding",
+  description: "Your step-by-step guide to finding Product-Market Fit through systematic marketing validation",
 };
 
 export default function RootLayout({

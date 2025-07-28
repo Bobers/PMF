@@ -1,7 +1,7 @@
 'use client';
 
-import PMFValidator from '@/components/PMFValidator';
+import EMUPrototype from '@/components/EMUPrototype';
 
 export default function Home() {
-  return <PMFValidator />;
+  return <EMUPrototype />;
 }

@@ -1,6 +1,6 @@
-# PMF Validator 🎯
+# EMU - Evolving Marketing Understanding 🦘
 
-A comprehensive Product-Market Fit validation tool that helps startups and product teams systematically test their hypotheses through an interactive, gamified experience.
+A comprehensive step-by-step guide to finding Product-Market Fit through systematic marketing validation. EMU provides a structured framework with actionable tasks, templates, and resources to help startups build effective go-to-market strategies.
 
 ## Features
 
@@ -9,22 +9,23 @@ A comprehensive Product-Market Fit validation tool that helps startups and produ
 - Stage-based customization (Idea, Prototype, Beta, Launched)
 - Target problem definition
 
-### 🎰 Interactive Hypothesis Generator
-- Slot machine interface for generating PMF combinations
-- Category-specific variations for problems, solutions, customers, and metrics
-- Individual and bulk hypothesis generation
+### 📊 4-Phase Marketing Journey
+1. **Marketing Foundation & Research** - Understand your market, customers, and competition
+2. **Strategy Development** - Define positioning, messaging, and go-to-market approach
+3. **Execution Planning** - Plan channels, campaigns, and resources
+4. **Launch & Optimization** - Execute and optimize based on data
 
-### 📊 4-Phase Validation Journey
-1. **Problem Discovery** - Validate the problem exists and is painful
-2. **Solution Hypothesis** - Test if your solution addresses the problem
-3. **Customer Validation** - Confirm your target customer segments
-4. **Value Confirmation** - Measure if customers will pay for the value
+### 📋 Jobs-to-be-Done Framework
+- Structured tasks for each marketing job
+- Clear Definition of Done criteria
+- Deliverables checklist
+- Resource templates and guides
 
 ### 📈 Progress Tracking
-- Visual timeline with completion indicators
-- Save and load validation hypotheses
-- Historical validation tracking
-- Phase-specific validation questions
+- Visual timeline with phase completion
+- Task-level progress tracking
+- Job completion validation
+- Output documentation for each deliverable
 
 ## Tech Stack
 
@@ -70,17 +71,21 @@ npm start
 
 1. **Define Your Product**: Start by entering your product name, selecting a category, current stage, and describing the target problem.
 
-2. **Generate Hypotheses**: Use the slot machine to generate different combinations of:
-   - Problems your customers face
-   - Solutions you can provide
-   - Customer segments to target
-   - Success metrics to track
+2. **Navigate the Phases**: Progress through the 4 marketing phases:
+   - Foundation & Research (2-3 weeks)
+   - Strategy Development (1-2 weeks)
+   - Execution Planning (1-2 weeks)
+   - Launch & Optimization (Ongoing)
 
-3. **Validate Each Phase**: Progress through the 4 validation phases, using the provided questions to guide your validation experiments.
+3. **Complete Jobs**: Each phase contains specific jobs with:
+   - Actionable tasks (required and optional)
+   - Definition of Done criteria
+   - Resource templates and guides
+   - Output documentation areas
 
-4. **Track Progress**: Save your hypotheses and track which phases you've validated.
+4. **Track Progress**: Monitor your progress at phase, job, and task levels with visual indicators.
 
-5. **Iterate**: Load previous hypotheses and continue refining based on your learnings.
+5. **Document Outputs**: Save your deliverables and findings for each job to build your complete GTM strategy.
 
 ## Project Structure
 
@@ -90,7 +95,7 @@ src/
 │   ├── layout.tsx       # Root layout with metadata
 │   └── page.tsx         # Main page component
 └── components/
-    └── PMFValidator.tsx # Main PMF validation component
+    └── EMUPrototype.tsx # Main EMU framework component
 ```
 
 ## Contributing
@@ -111,4 +116,4 @@ This project was built using Claude Code, Anthropic's AI-powered development ass
 
 ---
 
-**Live Demo**: [Visit PMF Validator](https://pmf-validator.vercel.app) (Deploy to see your live version)
+**Live Demo**: [Visit EMU](https://pmf-validator.vercel.app) (Deploy to see your live version)
