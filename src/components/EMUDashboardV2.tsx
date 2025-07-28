@@ -61,6 +61,7 @@ const EMUDashboardV2 = () => {
   // Editing states for individual items
   const [editingPainPoint, setEditingPainPoint] = useState<{ id: string; pain: string; severity: number; description: string } | null>(null);
   const [editingAudience, setEditingAudience] = useState<{ id: string; segment: string; description: string; characteristics: string } | null>(null);
+  const [editingSolution, setEditingSolution] = useState<{ id: string; solution: string; problems: string } | null>(null);
 
   // EMU Phases (locked until foundation is complete)
   const phases = [
@@ -356,6 +357,51 @@ const EMUDashboardV2 = () => {
       isEditing: false,
       isGenerating: false
     }]);
+  };
+
+  // Solution functions
+  const regenerateSolution = async (id: string) => {
+    setSolutions(prev => prev.map(s => 
+      s.id === id ? { ...s, isGenerating: true } : s
+    ));
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    const alternatives = [
+      { 
+        solution: "Marketing courses", 
+        problems: ["Too theoretical", "Time consuming", "Not actionable"]
+      },
+      { 
+        solution: "Fractional CMOs", 
+        problems: ["Still expensive ($5-10k/mo)", "Part-time availability", "May not fit culture"]
+      },
+      { 
+        solution: "DIY with blogs/YouTube", 
+        problems: ["Information overload", "Conflicting advice", "No clear path"]
+      }
+    ];
+    
+    const newContent = alternatives[Math.floor(Math.random() * alternatives.length)];
+    
+    setSolutions(prev => prev.map(s => 
+      s.id === id ? { ...s, ...newContent, isGenerating: false } : s
+    ));
+  };
+
+  const deleteSolution = (id: string) => {
+    setSolutions(prev => prev.filter(s => s.id !== id));
+  };
+
+  const saveSolutionEdit = () => {
+    if (!editingSolution) return;
+    
+    setSolutions(prev => prev.map(s => 
+      s.id === editingSolution.id 
+        ? { ...s, solution: editingSolution.solution, problems: editingSolution.problems.split(',').map(p => p.trim()), isEditing: false }
+        : s
+    ));
+    setEditingSolution(null);
   };
 
   // Onboarding Screen
@@ -752,38 +798,96 @@ const EMUDashboardV2 = () => {
               <div className="space-y-3">
                 {solutions.map((solution) => (
                   <div key={solution.id} className={`bg-gray-800 rounded-lg p-4 ${solution.isLocked ? 'border border-green-600' : ''}`}>
-                    <div className="flex justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-medium text-yellow-400">{solution.solution}</h3>
-                        <p className="text-xs text-gray-500 mt-2 mb-1">Problems:</p>
-                        <ul className="space-y-1">
-                          {solution.problems.map((problem, i) => (
-                            <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
-                              <span className="text-red-400 mt-0.5">•</span>
-                              {problem}
-                            </li>
-                          ))}
-                        </ul>
+                    {solution.isEditing && editingSolution?.id === solution.id ? (
+                      <div className="space-y-3">
+                        <input
+                          type="text"
+                          value={editingSolution.solution}
+                          onChange={(e) => setEditingSolution({ ...editingSolution, solution: e.target.value })}
+                          className="w-full p-2 bg-gray-700 border border-gray-600 rounded"
+                          placeholder="Solution name"
+                        />
+                        <textarea
+                          value={editingSolution.problems}
+                          onChange={(e) => setEditingSolution({ ...editingSolution, problems: e.target.value })}
+                          className="w-full p-2 bg-gray-700 border border-gray-600 rounded"
+                          rows={3}
+                          placeholder="Problems (comma-separated)"
+                        />
+                        <div className="flex gap-2">
+                          <button onClick={saveSolutionEdit} className="px-3 py-1 bg-purple-600 rounded text-sm">
+                            <Save className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => {
+                              setSolutions(prev => prev.map(s => s.id === solution.id ? { ...s, isEditing: false } : s));
+                              setEditingSolution(null);
+                            }}
+                            className="px-3 py-1 bg-gray-700 rounded text-sm"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex items-start gap-1 ml-4">
-                        {!solution.isLocked && (
-                          <>
-                            <button
-                              onClick={() => setSolutions(prev => prev.filter(s => s.id !== solution.id))}
-                              className="p-1.5 hover:bg-gray-700 rounded transition-colors text-red-400"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          </>
-                        )}
-                        <button
-                          onClick={() => setSolutions(prev => prev.map(s => s.id === solution.id ? { ...s, isLocked: !s.isLocked } : s))}
-                          className={`p-1.5 rounded transition-colors ${solution.isLocked ? 'bg-green-600' : 'hover:bg-gray-700'}`}
-                        >
-                          {solution.isLocked ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
-                        </button>
+                    ) : (
+                      <div className="flex justify-between">
+                        <div className="flex-1">
+                          {solution.isGenerating ? (
+                            <div className="flex items-center gap-2 text-gray-400">
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                              Regenerating...
+                            </div>
+                          ) : (
+                            <>
+                              <h3 className="font-medium text-yellow-400">{solution.solution}</h3>
+                              <p className="text-xs text-gray-500 mt-2 mb-1">Problems:</p>
+                              <ul className="space-y-1">
+                                {solution.problems.map((problem, i) => (
+                                  <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
+                                    <span className="text-red-400 mt-0.5">•</span>
+                                    {problem}
+                                  </li>
+                                ))}
+                              </ul>
+                            </>
+                          )}
+                        </div>
+                        <div className="flex items-start gap-1 ml-4">
+                          {!solution.isLocked && (
+                            <>
+                              <button
+                                onClick={() => regenerateSolution(solution.id)}
+                                className="p-1.5 hover:bg-gray-700 rounded transition-colors"
+                                disabled={solution.isGenerating}
+                              >
+                                <RefreshCw className="w-3 h-3" />
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setEditingSolution({ ...solution, problems: solution.problems.join(', ') });
+                                  setSolutions(prev => prev.map(s => s.id === solution.id ? { ...s, isEditing: true } : s));
+                                }}
+                                className="p-1.5 hover:bg-gray-700 rounded transition-colors"
+                              >
+                                <Edit2 className="w-3 h-3" />
+                              </button>
+                              <button
+                                onClick={() => deleteSolution(solution.id)}
+                                className="p-1.5 hover:bg-gray-700 rounded transition-colors text-red-400"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </>
+                          )}
+                          <button
+                            onClick={() => setSolutions(prev => prev.map(s => s.id === solution.id ? { ...s, isLocked: !s.isLocked } : s))}
+                            className={`p-1.5 rounded transition-colors ${solution.isLocked ? 'bg-green-600' : 'hover:bg-gray-700'}`}
+                          >
+                            {solution.isLocked ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
+                          </button>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 ))}
               </div>
