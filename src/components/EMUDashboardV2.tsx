@@ -176,7 +176,12 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
         
         if (existingData && existingData.data) {
           // Load existing data
-          const savedData = existingData.data as any;
+          const savedData = existingData.data as {
+            painPoints?: PainPointItem[];
+            audiences?: AudienceItem[];
+            solutions?: SolutionItem[];
+            whyItMatters?: WhyItMattersItem;
+          };
           console.log('EMUDashboardV2: Loading saved data:', savedData);
           setFoundationStatus(existingData.foundation_status || 'validating');
           
