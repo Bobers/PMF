@@ -29,6 +29,7 @@ export function useProjectData(userId: string | null) {
     }
 
     loadProject();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   const loadProject = async () => {
