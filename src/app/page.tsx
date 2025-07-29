@@ -7,8 +7,9 @@ import EMUOnboarding from '@/components/EMUOnboarding';
 import { Layers, GitBranch, Sparkles } from 'lucide-react';
 
 export default function Home() {
-  const [version, setVersion] = useState<'onboarding' | 'v2' | 'v3'>('v2');
+  const [version, setVersion] = useState<'onboarding' | 'v2' | 'v3' | 'product'>('v2');
   const [productData, setProductData] = useState<any>(null);
+  const [v2StartView, setV2StartView] = useState<'onboarding' | 'dashboard'>('dashboard');
 
   const handleOnboardingComplete = (data: any) => {
     setProductData(data);
@@ -20,19 +21,22 @@ export default function Home() {
       {/* Version Switcher */}
       <div className="fixed top-4 right-4 z-50 bg-gray-900 rounded-lg border border-gray-800 p-2 flex items-center gap-2">
         <button
-          onClick={() => setVersion('onboarding')}
+          onClick={() => setVersion('product')}
           className={`px-3 py-1.5 rounded flex items-center gap-2 transition-all ${
-            version === 'onboarding'
+            version === 'product'
               ? 'bg-purple-600 text-white'
               : 'bg-gray-800 text-gray-400 hover:text-gray-200'
           }`}
         >
           <Sparkles className="w-4 h-4" />
-          Onboarding
+          Product
         </button>
         <div className="w-px h-6 bg-gray-700" />
         <button
-          onClick={() => setVersion('v2')}
+          onClick={() => {
+            setVersion('v2');
+            setV2StartView('dashboard');
+          }}
           className={`px-3 py-1.5 rounded flex items-center gap-2 transition-all ${
             version === 'v2'
               ? 'bg-purple-600 text-white'
@@ -40,7 +44,7 @@ export default function Home() {
           }`}
         >
           <Layers className="w-4 h-4" />
-          V2 (Production)
+          V2
         </button>
         <button
           onClick={() => setVersion('v3')}
@@ -51,17 +55,19 @@ export default function Home() {
           }`}
         >
           <GitBranch className="w-4 h-4" />
-          V3 (Prototype)
+          V3
         </button>
       </div>
 
       {/* Render Selected Version */}
-      {version === 'onboarding' ? (
+      {version === 'product' ? (
         <EMUOnboarding onComplete={handleOnboardingComplete} />
       ) : version === 'v2' ? (
-        <EMUDashboardV2 />
-      ) : (
+        <EMUDashboardV2 startView={v2StartView} />
+      ) : version === 'v3' ? (
         <EMUDashboardV3 />
+      ) : (
+        <EMUOnboarding onComplete={handleOnboardingComplete} />
       )}
     </div>
   );
