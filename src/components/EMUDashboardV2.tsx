@@ -869,51 +869,32 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
                 {painPoints.map((pain) => (
                   <div key={pain.id} className={`bg-gray-800 rounded-lg p-4 ${pain.isLocked ? 'border border-green-600' : ''}`}>
                     {pain.isEditing && editingPainPoint?.id === pain.id ? (
-                      <div className="flex items-center gap-2 text-gray-400">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Regenerating...
-                      </div>
-                    ) : audience.isEditing && editingAudience?.id === audience.id ? (
                       <div className="space-y-3">
                         <input
                           type="text"
-                          value={editingAudience.segment}
-                          onChange={(e) => setEditingAudience({ ...editingAudience, segment: e.target.value })}
+                          value={editingPainPoint.pain}
+                          onChange={(e) => setEditingPainPoint({ ...editingPainPoint, pain: e.target.value })}
                           className="w-full p-2 bg-gray-700 border border-gray-600 rounded"
-                          placeholder="Segment name"
+                          placeholder="Pain point title"
                         />
                         <textarea
-                          value={editingAudience.description}
-                          onChange={(e) => setEditingAudience({ ...editingAudience, description: e.target.value })}
+                          value={editingPainPoint.description}
+                          onChange={(e) => setEditingPainPoint({ ...editingPainPoint, description: e.target.value })}
                           className="w-full p-2 bg-gray-700 border border-gray-600 rounded"
                           rows={2}
                           placeholder="Description"
                         />
-                        <textarea
-                          value={editingAudience.characteristics}
-                          onChange={(e) => setEditingAudience({ ...editingAudience, characteristics: e.target.value })}
-                          className="w-full p-2 bg-gray-700 border border-gray-600 rounded"
-                          rows={2}
-                          placeholder="Characteristics (comma-separated)"
-                        />
                         <div className="flex gap-2">
                           <button 
-                            onClick={() => {
-                              setAudiences(prev => prev.map(a => 
-                                a.id === audience.id 
-                                  ? { ...a, ...editingAudience, characteristics: editingAudience.characteristics.split(',').map(c => c.trim()), isEditing: false }
-                                  : a
-                              ));
-                              setEditingAudience(null);
-                            }}
+                            onClick={() => savePainPointEdit()}
                             className="px-3 py-1 bg-purple-600 rounded text-sm"
                           >
                             <Save className="w-4 h-4" />
                           </button>
                           <button 
                             onClick={() => {
-                              setAudiences(prev => prev.map(a => a.id === audience.id ? { ...a, isEditing: false } : a));
-                              setEditingAudience(null);
+                              setPainPoints(prev => prev.map(p => p.id === pain.id ? { ...p, isEditing: false } : p));
+                              setEditingPainPoint(null);
                             }}
                             className="px-3 py-1 bg-gray-700 rounded text-sm"
                           >
@@ -924,37 +905,35 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
                     ) : (
                       <div className="flex justify-between">
                         <div className="flex-1">
-                          <h3 className="font-medium text-purple-400">{audience.segment}</h3>
-                          <p className="text-sm text-gray-300 mt-1">{audience.description}</p>
-                          <div className="flex flex-wrap gap-2 mt-3">
-                            {audience.characteristics.map((char, i) => (
-                              <span key={i} className="px-2 py-1 bg-gray-700 rounded text-xs">
-                                {char}
-                              </span>
-                            ))}
+                          <h3 className="font-medium text-red-400">{pain.pain}</h3>
+                          <p className="text-sm text-gray-300 mt-1">{pain.description}</p>
+                          <div className="flex items-center gap-3 mt-3">
+                            <span className="text-xs bg-red-900 text-red-300 px-2 py-1 rounded">
+                              Severity: {pain.severity}/10
+                            </span>
                           </div>
                         </div>
                         <div className="flex items-start gap-1 ml-4">
-                          {!audience.isLocked && (
+                          {!pain.isLocked && (
                             <>
                               <button
-                                onClick={() => regenerateAudience(audience.id)}
+                                onClick={() => regeneratePainPoint(pain.id)}
                                 className="p-1.5 hover:bg-gray-700 rounded transition-colors"
-                                disabled={audience.isGenerating}
+                                disabled={pain.isGenerating}
                               >
                                 <RefreshCw className="w-3 h-3" />
                               </button>
                               <button
                                 onClick={() => {
-                                  setEditingAudience({ ...audience, characteristics: audience.characteristics.join(', ') });
-                                  setAudiences(prev => prev.map(a => a.id === audience.id ? { ...a, isEditing: true } : a));
+                                  setEditingPainPoint({ ...pain });
+                                  setPainPoints(prev => prev.map(p => p.id === pain.id ? { ...p, isEditing: true } : p));
                                 }}
                                 className="p-1.5 hover:bg-gray-700 rounded transition-colors"
                               >
                                 <Edit2 className="w-3 h-3" />
                               </button>
                               <button
-                                onClick={() => deleteAudience(audience.id)}
+                                onClick={() => deletePainPoint(pain.id)}
                                 className="p-1.5 hover:bg-gray-700 rounded transition-colors text-red-400"
                               >
                                 <Trash2 className="w-3 h-3" />
@@ -962,10 +941,10 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
                             </>
                           )}
                           <button
-                            onClick={() => setAudiences(prev => prev.map(a => a.id === audience.id ? { ...a, isLocked: !a.isLocked } : a))}
-                            className={`p-1.5 rounded transition-colors ${audience.isLocked ? 'bg-green-600' : 'hover:bg-gray-700'}`}
+                            onClick={() => setPainPoints(prev => prev.map(p => p.id === pain.id ? { ...p, isLocked: !p.isLocked } : p))}
+                            className={`p-1.5 rounded transition-colors ${pain.isLocked ? 'bg-green-600' : 'hover:bg-gray-700'}`}
                           >
-                            {audience.isLocked ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
+                            {pain.isLocked ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
                           </button>
                         </div>
                       </div>
