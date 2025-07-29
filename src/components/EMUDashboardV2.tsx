@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Target, Sparkles, RefreshCw, Edit2, Lock, Unlock, AlertCircle, CheckCircle2, Loader2, ChevronRight, Search, Lightbulb, TrendingUp, Award, Zap, Plus, Trash2, Save, X } from 'lucide-react';
+import { DataService } from '@/lib/supabase/data-service';
+import { createClient } from '@/lib/supabase/client';
 
 interface EMUDashboardV2Props {
   startView?: 'onboarding' | 'dashboard';
@@ -31,6 +33,11 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
 
   // Foundation State
   const [foundationStatus, setFoundationStatus] = useState('pending'); // 'pending', 'extracting', 'validating', 'locked'
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Services
+  const dataService = new DataService();
+  const supabase = createClient();
   
   type PainPointItem = {
     id: string;
@@ -76,11 +83,93 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
   const [editingAudience, setEditingAudience] = useState<{ id: string; segment: string; description: string; characteristics: string } | null>(null);
   const [editingSolution, setEditingSolution] = useState<{ id: string; solution: string; problems: string } | null>(null);
 
-  // Auto-extract foundation when productData is provided
-  useEffect(() => {
-    if (productData && foundationStatus === 'pending') {
-      extractFoundation();
+  // Save data whenever it changes
+  const saveData = async () => {
+    if (!supabase || !productData) return;
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const project = await dataService.getActiveProject(user.id);
+      if (!project) return;
+
+      const dataToSave = {
+        painPoints,
+        audiences,
+        solutions,
+        whyItMatters
+      };
+
+      await dataService.saveProjectData(
+        project.id,
+        user.id,
+        'v2',
+        dataToSave,
+        foundationStatus
+      );
+    } catch (error) {
+      console.error('Error saving data:', error);
     }
+  };
+
+  // Auto-save when data changes
+  useEffect(() => {
+    if (foundationStatus !== 'pending' && foundationStatus !== 'extracting') {
+      saveData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [painPoints, audiences, solutions, whyItMatters, foundationStatus]);
+
+  // Load existing data or extract when productData is provided
+  useEffect(() => {
+    const loadOrExtractData = async () => {
+      if (!productData || !supabase) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        // Get user and project info
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          setIsLoading(false);
+          return;
+        }
+
+        // Get active project
+        const project = await dataService.getActiveProject(user.id);
+        if (!project) {
+          setIsLoading(false);
+          return;
+        }
+
+        // Try to load existing V2 data
+        const existingData = await dataService.getProjectData(project.id, 'v2');
+        
+        if (existingData && existingData.data) {
+          // Load existing data
+          const savedData = existingData.data as any;
+          setFoundationStatus(existingData.foundation_status || 'validating');
+          
+          if (savedData.painPoints) setPainPoints(savedData.painPoints);
+          if (savedData.audiences) setAudiences(savedData.audiences);
+          if (savedData.solutions) setSolutions(savedData.solutions);
+          if (savedData.whyItMatters) setWhyItMatters(savedData.whyItMatters);
+          
+          setView('dashboard');
+        } else if (foundationStatus === 'pending') {
+          // No existing data, extract new
+          extractFoundation();
+        }
+      } catch (error) {
+        console.error('Error loading data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadOrExtractData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productData]);
 
@@ -1058,6 +1147,18 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
               </div>
             </div>
           )}
+        </div>
+      </div>
+    );
+  }
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-950 text-gray-100 flex items-center justify-center">
+        <div className="flex items-center gap-3">
+          <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
+          <span className="text-gray-400">Loading your PMF journey...</span>
         </div>
       </div>
     );
