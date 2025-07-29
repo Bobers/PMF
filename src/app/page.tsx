@@ -19,7 +19,7 @@ interface ProductData {
 }
 
 export default function Home() {
-  const [version, setVersion] = useState<'onboarding' | 'v2' | 'v3' | 'product'>('v2');
+  const [version, setVersion] = useState<'onboarding' | 'v2' | 'v3' | 'product'>('product');
   const [v2StartView, setV2StartView] = useState<'onboarding' | 'dashboard'>('dashboard');
   const [user, setUser] = useState<{id: string; email?: string} | null>(null);
   const [loading, setLoading] = useState(true);
@@ -50,18 +50,7 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Auto-switch to dashboard if user has existing project (only on initial load)
-  useEffect(() => {
-    if (!projectLoading && projectData && version === 'product') {
-      // Only auto-redirect on initial page load, not when manually clicking Product button
-      const isInitialLoad = sessionStorage.getItem('hasNavigated') !== 'true';
-      if (isInitialLoad) {
-        setVersion('v2');
-        setV2StartView('dashboard');
-        sessionStorage.setItem('hasNavigated', 'true');
-      }
-    }
-  }, [projectLoading, projectData]);
+  // No auto-redirect - let users control navigation manually
 
   const handleOnboardingComplete = async (data: ProductData) => {
     // Save product data to database
