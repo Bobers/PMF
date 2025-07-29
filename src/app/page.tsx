@@ -7,6 +7,7 @@ import EMUOnboarding from '@/components/EMUOnboarding';
 import Auth from '@/components/Auth';
 import UserMenu from '@/components/UserMenu';
 import { createClient } from '@/lib/supabase/client';
+import { useProjectData } from '@/hooks/useProjectData';
 import { Layers, GitBranch, Sparkles } from 'lucide-react';
 
 interface ProductData {
@@ -20,11 +21,11 @@ interface ProductData {
 export default function Home() {
   const [version, setVersion] = useState<'onboarding' | 'v2' | 'v3' | 'product'>('v2');
   const [v2StartView, setV2StartView] = useState<'onboarding' | 'dashboard'>('dashboard');
-  const [productData, setProductData] = useState<ProductData | null>(null);
   const [user, setUser] = useState<{id: string; email?: string} | null>(null);
   const [loading, setLoading] = useState(true);
 
   const supabase = createClient();
+  const { projectData, loading: projectLoading, saveProject } = useProjectData(user?.id || null);
 
   useEffect(() => {
     if (!supabase) {
@@ -49,14 +50,26 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleOnboardingComplete = (data: ProductData) => {
-    // Store product data and switch to V2
-    setProductData(data);
-    setV2StartView('dashboard');
-    setVersion('v2');
+  // Auto-switch to dashboard if user has existing project
+  useEffect(() => {
+    if (!projectLoading && projectData && version === 'product') {
+      setVersion('v2');
+      setV2StartView('dashboard');
+    }
+  }, [projectLoading, projectData, version]);
+
+  const handleOnboardingComplete = async (data: ProductData) => {
+    // Save product data to database
+    const saved = await saveProject(data);
+    if (saved) {
+      setV2StartView('dashboard');
+      setVersion('v2');
+    } else {
+      alert('Failed to save project. Please try again.');
+    }
   };
 
-  if (loading) {
+  if (loading || (user && projectLoading)) {
     return (
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="text-gray-400">Loading...</div>
@@ -112,20 +125,23 @@ export default function Home() {
         {user && (
           <>
             <div className="w-px h-6 bg-gray-700" />
-            <UserMenu user={user} onSignOut={() => setUser(null)} />
+            <UserMenu user={user} onSignOut={() => setUser(null)} projectName={projectData?.name} />
           </>
         )}
       </div>
 
       {/* Render Selected Version */}
       {version === 'product' ? (
-        <EMUOnboarding onComplete={handleOnboardingComplete} />
+        <EMUOnboarding 
+          onComplete={handleOnboardingComplete} 
+          initialData={projectData}
+        />
       ) : version === 'v2' ? (
-        <EMUDashboardV2 startView={v2StartView} productData={productData} />
+        <EMUDashboardV2 startView={v2StartView} productData={projectData} />
       ) : version === 'v3' ? (
-        <EMUDashboardV3 startView="dashboard" productData={productData} />
+        <EMUDashboardV3 startView="dashboard" productData={projectData} />
       ) : (
-        <EMUOnboarding onComplete={handleOnboardingComplete} />
+        <EMUOnboarding onComplete={handleOnboardingComplete} initialData={projectData} />
       )}
     </div>
   );

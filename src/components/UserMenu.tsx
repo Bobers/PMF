@@ -7,9 +7,10 @@ import { User, LogOut, Save, Download, ChevronDown } from 'lucide-react';
 interface UserMenuProps {
   user: {id: string; email?: string};
   onSignOut: () => void;
+  projectName?: string;
 }
 
-export default function UserMenu({ user, onSignOut }: UserMenuProps) {
+export default function UserMenu({ user, onSignOut, projectName }: UserMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const supabase = createClient();
 
@@ -42,6 +43,11 @@ export default function UserMenu({ user, onSignOut }: UserMenuProps) {
               <div className="px-3 py-2 text-sm text-gray-400">
                 {user.email}
               </div>
+              {projectName && (
+                <div className="px-3 py-1 text-xs text-gray-500">
+                  Project: {projectName}
+                </div>
+              )}
               <hr className="my-2 border-gray-800" />
               <button
                 onClick={() => {

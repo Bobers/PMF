@@ -11,6 +11,8 @@ export class DataService {
 
   // Get or create active project for user
   async getActiveProject(userId: string): Promise<Project | null> {
+    if (!this.supabase) return null;
+    
     const { data, error } = await this.supabase
       .from('pmf_projects')
       .select('*')
@@ -28,6 +30,8 @@ export class DataService {
 
   // Create a new project
   async createProject(project: Omit<ProjectInsert, 'user_id'>, userId: string): Promise<Project | null> {
+    if (!this.supabase) return null;
+    
     // First, set all other projects as inactive
     await this.supabase
       .from('pmf_projects')

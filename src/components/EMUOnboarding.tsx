@@ -11,15 +11,22 @@ interface OnboardingProps {
     description: string;
     targetProblem: string;
   }) => void;
+  initialData?: {
+    name: string;
+    category: string;
+    stage: string;
+    description: string;
+    targetProblem: string;
+  } | null;
 }
 
-const EMUOnboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
+const EMUOnboarding: React.FC<OnboardingProps> = ({ onComplete, initialData }) => {
   const [productInfo, setProductInfo] = useState({
-    name: '',
-    category: '',
-    stage: '',
-    description: '',
-    targetProblem: ''
+    name: initialData?.name || '',
+    category: initialData?.category || '',
+    stage: initialData?.stage || '',
+    description: initialData?.description || '',
+    targetProblem: initialData?.targetProblem || ''
   });
 
   const handleSubmit = () => {
@@ -113,7 +120,7 @@ const EMUOnboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
             className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-700 px-6 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
           >
             <Sparkles className="w-5 h-5" />
-            Start EMU Journey
+            {initialData ? 'Update & Continue' : 'Start EMU Journey'}
           </button>
         </div>
       </div>
