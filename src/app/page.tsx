@@ -1,9 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import EMUDashboardV2 from '@/components/EMUDashboardV2';
 import EMUDashboardV3 from '@/components/EMUDashboardV3';
 import EMUOnboarding from '@/components/EMUOnboarding';
+import Auth from '@/components/Auth';
+import UserMenu from '@/components/UserMenu';
+import { createClient } from '@/lib/supabase/client';
 import { Layers, GitBranch, Sparkles } from 'lucide-react';
 
 interface ProductData {
@@ -18,6 +21,33 @@ export default function Home() {
   const [version, setVersion] = useState<'onboarding' | 'v2' | 'v3' | 'product'>('v2');
   const [v2StartView, setV2StartView] = useState<'onboarding' | 'dashboard'>('dashboard');
   const [productData, setProductData] = useState<ProductData | null>(null);
+  const [user, setUser] = useState<{id: string; email?: string} | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const supabase = createClient();
+
+  useEffect(() => {
+    if (!supabase) {
+      setLoading(false);
+      return;
+    }
+
+    // Check for existing session
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    supabase.auth.getSession().then((response: any) => {
+      setUser(response.data.session?.user ?? null);
+      setLoading(false);
+    });
+
+    // Listen for auth changes
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => authListener.subscription.unsubscribe();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleOnboardingComplete = (data: ProductData) => {
     // Store product data and switch to V2
@@ -25,6 +55,18 @@ export default function Home() {
     setV2StartView('dashboard');
     setVersion('v2');
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="text-gray-400">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user && supabase) {
+    return <Auth onAuthStateChange={setUser} />;
+  }
 
   return (
     <div>
@@ -67,6 +109,12 @@ export default function Home() {
           <GitBranch className="w-4 h-4" />
           V3
         </button>
+        {user && (
+          <>
+            <div className="w-px h-6 bg-gray-700" />
+            <UserMenu user={user} onSignOut={() => setUser(null)} />
+          </>
+        )}
       </div>
 
       {/* Render Selected Version */}
