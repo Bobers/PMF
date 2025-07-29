@@ -17,6 +17,8 @@ interface EMUDashboardV2Props {
 }
 
 const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV2Props) => {
+  console.log('EMUDashboardV2: Component mounting/re-rendering');
+  
   // Navigation State - if we have productData, skip onboarding
   const [view, setView] = useState<'onboarding' | 'dashboard' | 'foundation-detail'>(
     productData ? 'dashboard' : startView
@@ -38,6 +40,13 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
   // Services
   const dataService = new DataService();
   const supabase = createClient();
+  
+  // Component unmount
+  useEffect(() => {
+    return () => {
+      console.log('EMUDashboardV2: Component unmounting');
+    };
+  }, []);
   
   type PainPointItem = {
     id: string;
@@ -101,6 +110,8 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
         whyItMatters
       };
 
+      console.log('EMUDashboardV2: Saving data:', dataToSave);
+      
       await dataService.saveProjectData(
         project.id,
         user.id,
@@ -108,6 +119,8 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
         dataToSave,
         foundationStatus
       );
+      
+      console.log('EMUDashboardV2: Data saved successfully');
     } catch (error) {
       console.error('Error saving data:', error);
     }
@@ -127,6 +140,12 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
   // Load existing data or extract when productData is provided
   useEffect(() => {
     const loadOrExtractData = async () => {
+      console.log('EMUDashboardV2: loadOrExtractData called', { 
+        productData: !!productData, 
+        supabase: !!supabase, 
+        hasInitialized 
+      });
+      
       if (!productData || !supabase || hasInitialized) {
         setIsLoading(false);
         return;
@@ -138,6 +157,7 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
         // Get user and project info
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
+          console.log('EMUDashboardV2: No user found');
           setIsLoading(false);
           return;
         }
@@ -145,16 +165,19 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
         // Get active project
         const project = await dataService.getActiveProject(user.id);
         if (!project) {
+          console.log('EMUDashboardV2: No active project found');
           setIsLoading(false);
           return;
         }
 
         // Try to load existing V2 data
         const existingData = await dataService.getProjectData(project.id, 'v2');
+        console.log('EMUDashboardV2: Existing data:', existingData);
         
         if (existingData && existingData.data) {
           // Load existing data
           const savedData = existingData.data as any;
+          console.log('EMUDashboardV2: Loading saved data:', savedData);
           setFoundationStatus(existingData.foundation_status || 'validating');
           
           if (savedData.painPoints) setPainPoints(savedData.painPoints);
@@ -165,6 +188,7 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
           setView('dashboard');
         } else {
           // No existing data, extract new
+          console.log('EMUDashboardV2: No existing data, extracting new');
           extractFoundation();
         }
       } catch (error) {
