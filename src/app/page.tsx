@@ -6,13 +6,21 @@ import EMUDashboardV3 from '@/components/EMUDashboardV3';
 import EMUOnboarding from '@/components/EMUOnboarding';
 import { Layers, GitBranch, Sparkles } from 'lucide-react';
 
+interface ProductData {
+  name: string;
+  category: string;
+  stage: string;
+  description: string;
+  targetProblem: string;
+}
+
 export default function Home() {
   const [version, setVersion] = useState<'onboarding' | 'v2' | 'v3' | 'product'>('v2');
-  const [productData, setProductData] = useState<any>(null);
   const [v2StartView, setV2StartView] = useState<'onboarding' | 'dashboard'>('dashboard');
 
-  const handleOnboardingComplete = (data: any) => {
-    setProductData(data);
+  const handleOnboardingComplete = (data: ProductData) => {
+    // Product data received from onboarding
+    console.log('Product onboarding completed:', data);
     setVersion('v2');
   };
 

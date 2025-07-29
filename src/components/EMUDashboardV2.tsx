@@ -9,7 +9,7 @@ interface EMUDashboardV2Props {
 
 const EMUDashboardV2 = ({ startView = 'onboarding' }: EMUDashboardV2Props) => {
   // Navigation State
-  const [view, setView] = useState(startView); // 'onboarding', 'dashboard', 'foundation-detail'
+  const [view, setView] = useState<'onboarding' | 'dashboard' | 'foundation-detail'>(startView); // 'onboarding', 'dashboard', 'foundation-detail'
   
   // Product State
   const [productInfo, setProductInfo] = useState({
