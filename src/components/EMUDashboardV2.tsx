@@ -740,94 +740,108 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
 
               <div className="space-y-3">
                 {audiences.map((audience) => (
-                  <div key={pain.id} className={`bg-gray-800 rounded-lg p-4 ${pain.isLocked ? 'border border-green-600' : ''}`}>
-                    {pain.isEditing && editingPainPoint?.id === pain.id ? (
+                  <div key={audience.id} className={`bg-gray-800 rounded-lg p-4 ${audience.isLocked ? 'border border-green-600' : ''}`}>
+                    {audience.isGenerating ? (
+                      <div className="flex items-center gap-2 text-gray-400">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Regenerating...
+                      </div>
+                    ) : audience.isEditing && editingAudience?.id === audience.id ? (
                       <div className="space-y-3">
                         <input
                           type="text"
-                          value={editingPainPoint.pain}
-                          onChange={(e) => setEditingPainPoint({ ...editingPainPoint, pain: e.target.value })}
+                          value={editingAudience.segment}
+                          onChange={(e) => setEditingAudience({ ...editingAudience, segment: e.target.value })}
                           className="w-full p-2 bg-gray-700 border border-gray-600 rounded"
-                          placeholder="Pain point title"
+                          placeholder="Segment name"
                         />
                         <textarea
-                          value={editingPainPoint.description}
-                          onChange={(e) => setEditingPainPoint({ ...editingPainPoint, description: e.target.value })}
+                          value={editingAudience.description}
+                          onChange={(e) => setEditingAudience({ ...editingAudience, description: e.target.value })}
                           className="w-full p-2 bg-gray-700 border border-gray-600 rounded"
                           rows={2}
                           placeholder="Description"
                         />
-                        <div className="flex items-center gap-2">
-                          <label>Severity:</label>
-                          <input
-                            type="number"
-                            min="1"
-                            max="10"
-                            value={editingPainPoint.severity}
-                            onChange={(e) => setEditingPainPoint({ ...editingPainPoint, severity: parseInt(e.target.value) })}
-                            className="w-16 p-2 bg-gray-700 border border-gray-600 rounded"
-                          />
-                          <button onClick={savePainPointEdit} className="ml-auto px-3 py-1 bg-purple-600 rounded text-sm">
+                        <textarea
+                          value={editingAudience.characteristics}
+                          onChange={(e) => setEditingAudience({ ...editingAudience, characteristics: e.target.value })}
+                          className="w-full p-2 bg-gray-700 border border-gray-600 rounded"
+                          rows={2}
+                          placeholder="Characteristics (comma-separated)"
+                        />
+                        <div className="flex gap-2">
+                          <button 
+                            onClick={() => {
+                              setAudiences(prev => prev.map(a => 
+                                a.id === audience.id 
+                                  ? { ...a, ...editingAudience, characteristics: editingAudience.characteristics.split(',').map(c => c.trim()), isEditing: false }
+                                  : a
+                              ));
+                              setEditingAudience(null);
+                            }}
+                            className="px-3 py-1 bg-purple-600 rounded text-sm"
+                          >
                             <Save className="w-4 h-4" />
                           </button>
-                          <button onClick={() => { setPainPoints(prev => prev.map(p => p.id === pain.id ? { ...p, isEditing: false } : p)); setEditingPainPoint(null); }} className="px-3 py-1 bg-gray-700 rounded text-sm">
+                          <button 
+                            onClick={() => {
+                              setAudiences(prev => prev.map(a => a.id === audience.id ? { ...a, isEditing: false } : a));
+                              setEditingAudience(null);
+                            }}
+                            className="px-3 py-1 bg-gray-700 rounded text-sm"
+                          >
                             <X className="w-4 h-4" />
                           </button>
                         </div>
                       </div>
                     ) : (
-                      <>
-                        <div className="flex justify-between">
-                          <div className="flex-1">
-                            {pain.isGenerating ? (
-                              <div className="flex items-center gap-2 text-gray-400">
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                                Regenerating...
-                              </div>
-                            ) : (
-                              <>
-                                <h3 className="font-medium">{pain.pain}</h3>
-                                <p className="text-sm text-gray-400 mt-1">{pain.description}</p>
-                              </>
-                            )}
-                          </div>
-                          <div className="flex items-start gap-4">
-                            <div className="text-2xl font-bold text-red-400">{pain.severity}/10</div>
-                            {!pain.isLocked && (
-                              <div className="flex items-center gap-1">
-                                <button
-                                  onClick={() => regeneratePainPoint(pain.id)}
-                                  className="p-1.5 hover:bg-gray-700 rounded transition-colors"
-                                  disabled={pain.isGenerating}
-                                >
-                                  <RefreshCw className="w-3 h-3" />
-                                </button>
-                                <button
-                                  onClick={() => {
-                                    setEditingPainPoint({ ...pain });
-                                    setPainPoints(prev => prev.map(p => p.id === pain.id ? { ...p, isEditing: true } : p));
-                                  }}
-                                  className="p-1.5 hover:bg-gray-700 rounded transition-colors"
-                                >
-                                  <Edit2 className="w-3 h-3" />
-                                </button>
-                                <button
-                                  onClick={() => deletePainPoint(pain.id)}
-                                  className="p-1.5 hover:bg-gray-700 rounded transition-colors text-red-400"
-                                >
-                                  <Trash2 className="w-3 h-3" />
-                                </button>
-                              </div>
-                            )}
-                            <button
-                              onClick={() => setPainPoints(prev => prev.map(p => p.id === pain.id ? { ...p, isLocked: !p.isLocked } : p))}
-                              className={`p-1.5 rounded transition-colors ${pain.isLocked ? 'bg-green-600' : 'hover:bg-gray-700'}`}
-                            >
-                              {pain.isLocked ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
-                            </button>
+                      <div className="flex justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-medium text-purple-400">{audience.segment}</h3>
+                          <p className="text-sm text-gray-300 mt-1">{audience.description}</p>
+                          <div className="flex flex-wrap gap-2 mt-3">
+                            {audience.characteristics.map((char, i) => (
+                              <span key={i} className="px-2 py-1 bg-gray-700 rounded text-xs">
+                                {char}
+                              </span>
+                            ))}
                           </div>
                         </div>
-                      </>
+                        <div className="flex items-start gap-1 ml-4">
+                          {!audience.isLocked && (
+                            <>
+                              <button
+                                onClick={() => regenerateAudience(audience.id)}
+                                className="p-1.5 hover:bg-gray-700 rounded transition-colors"
+                                disabled={audience.isGenerating}
+                              >
+                                <RefreshCw className="w-3 h-3" />
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setEditingAudience({ ...audience, characteristics: audience.characteristics.join(', ') });
+                                  setAudiences(prev => prev.map(a => a.id === audience.id ? { ...a, isEditing: true } : a));
+                                }}
+                                className="p-1.5 hover:bg-gray-700 rounded transition-colors"
+                              >
+                                <Edit2 className="w-3 h-3" />
+                              </button>
+                              <button
+                                onClick={() => deleteAudience(audience.id)}
+                                className="p-1.5 hover:bg-gray-700 rounded transition-colors text-red-400"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </>
+                          )}
+                          <button
+                            onClick={() => setAudiences(prev => prev.map(a => a.id === audience.id ? { ...a, isLocked: !a.isLocked } : a))}
+                            className={`p-1.5 rounded transition-colors ${audience.isLocked ? 'bg-green-600' : 'hover:bg-gray-700'}`}
+                          >
+                            {audience.isLocked ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
+                          </button>
+                        </div>
+                      </div>
                     )}
                   </div>
                 ))}
@@ -844,7 +858,7 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
                   <p className="text-sm text-gray-400 mt-1">What problems do your early adopters face?</p>
                 </div>
                 <button
-                  onClick={addAudience}
+                  onClick={addPainPoint}
                   className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
                 >
                   <Plus className="w-4 h-4" />
@@ -852,9 +866,9 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
               </div>
 
               <div className="space-y-3">
-                {audiences.map((audience) => (
-                  <div key={audience.id} className={`bg-gray-800 rounded-lg p-4 ${audience.isLocked ? 'border border-green-600' : ''}`}>
-                    {audience.isGenerating ? (
+                {painPoints.map((pain) => (
+                  <div key={pain.id} className={`bg-gray-800 rounded-lg p-4 ${pain.isLocked ? 'border border-green-600' : ''}`}>
+                    {pain.isEditing && editingPainPoint?.id === pain.id ? (
                       <div className="flex items-center gap-2 text-gray-400">
                         <Loader2 className="w-4 h-4 animate-spin" />
                         Regenerating...
