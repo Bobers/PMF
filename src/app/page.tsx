@@ -50,13 +50,18 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Auto-switch to dashboard if user has existing project
+  // Auto-switch to dashboard if user has existing project (only on initial load)
   useEffect(() => {
     if (!projectLoading && projectData && version === 'product') {
-      setVersion('v2');
-      setV2StartView('dashboard');
+      // Only auto-redirect on initial page load, not when manually clicking Product button
+      const isInitialLoad = sessionStorage.getItem('hasNavigated') !== 'true';
+      if (isInitialLoad) {
+        setVersion('v2');
+        setV2StartView('dashboard');
+        sessionStorage.setItem('hasNavigated', 'true');
+      }
     }
-  }, [projectLoading, projectData, version]);
+  }, [projectLoading, projectData]);
 
   const handleOnboardingComplete = async (data: ProductData) => {
     // Save product data to database
