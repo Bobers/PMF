@@ -3,9 +3,13 @@
 import React, { useState } from 'react';
 import { Target, Sparkles, AlertCircle, CheckCircle2, GitBranch, TrendingDown, Brain, History } from 'lucide-react';
 
-const EMUDashboardV3 = () => {
+interface EMUDashboardV3Props {
+  startView?: 'onboarding' | 'dashboard';
+}
+
+const EMUDashboardV3 = ({ startView = 'onboarding' }: EMUDashboardV3Props) => {
   // Navigation State
-  const [view, setView] = useState('onboarding'); // 'onboarding', 'dashboard', 'foundation-detail', 'pivot-wizard'
+  const [view, setView] = useState<'onboarding' | 'dashboard' | 'foundation-detail' | 'pivot-wizard'>(startView); // 'onboarding', 'dashboard', 'foundation-detail', 'pivot-wizard'
   
   // Product State
   const [productInfo, setProductInfo] = useState({

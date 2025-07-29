@@ -73,7 +73,7 @@ export default function Home() {
       ) : version === 'v2' ? (
         <EMUDashboardV2 startView={v2StartView} />
       ) : version === 'v3' ? (
-        <EMUDashboardV3 />
+        <EMUDashboardV3 startView="dashboard" />
       ) : (
         <EMUOnboarding onComplete={handleOnboardingComplete} />
       )}
