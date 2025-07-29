@@ -180,7 +180,12 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
             painPoints?: PainPointItem[];
             audiences?: AudienceItem[];
             solutions?: SolutionItem[];
-            whyItMatters?: WhyItMattersItem;
+            whyItMatters?: {
+              content: string;
+              isLocked: boolean;
+              isEditing: boolean;
+              isGenerating: boolean;
+            };
           };
           console.log('EMUDashboardV2: Loading saved data:', savedData);
           setFoundationStatus(existingData.foundation_status || 'validating');
