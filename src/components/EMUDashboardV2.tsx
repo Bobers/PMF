@@ -121,15 +121,20 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [painPoints, audiences, solutions, whyItMatters, foundationStatus]);
 
+  // Track if we've already loaded/extracted data
+  const [hasInitialized, setHasInitialized] = useState(false);
+
   // Load existing data or extract when productData is provided
   useEffect(() => {
     const loadOrExtractData = async () => {
-      if (!productData || !supabase) {
+      if (!productData || !supabase || hasInitialized) {
         setIsLoading(false);
         return;
       }
 
       try {
+        setHasInitialized(true);
+        
         // Get user and project info
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
@@ -158,7 +163,7 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
           if (savedData.whyItMatters) setWhyItMatters(savedData.whyItMatters);
           
           setView('dashboard');
-        } else if (foundationStatus === 'pending') {
+        } else {
           // No existing data, extract new
           extractFoundation();
         }
@@ -171,7 +176,7 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
 
     loadOrExtractData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [productData]);
+  }, [productData, hasInitialized]);
 
   // EMU Phases (locked until foundation is complete)
   const phases = [
