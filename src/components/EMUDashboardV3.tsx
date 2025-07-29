@@ -1,23 +1,32 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Target, Sparkles, AlertCircle, CheckCircle2, GitBranch, TrendingDown, Brain, History } from 'lucide-react';
 
 interface EMUDashboardV3Props {
   startView?: 'onboarding' | 'dashboard';
+  productData?: {
+    name: string;
+    category: string;
+    stage: string;
+    description: string;
+    targetProblem: string;
+  } | null;
 }
 
-const EMUDashboardV3 = ({ startView = 'onboarding' }: EMUDashboardV3Props) => {
-  // Navigation State
-  const [view, setView] = useState<'onboarding' | 'dashboard' | 'foundation-detail' | 'pivot-wizard'>(startView); // 'onboarding', 'dashboard', 'foundation-detail', 'pivot-wizard'
+const EMUDashboardV3 = ({ startView = 'onboarding', productData }: EMUDashboardV3Props) => {
+  // Navigation State - if we have productData, skip onboarding
+  const [view, setView] = useState<'onboarding' | 'dashboard' | 'foundation-detail' | 'pivot-wizard'>(
+    productData ? 'dashboard' : startView
+  );
   
-  // Product State
+  // Product State - initialize with productData if available
   const [productInfo, setProductInfo] = useState({
-    name: '',
-    category: '',
-    stage: '',
-    description: '',
-    targetProblem: ''
+    name: productData?.name || '',
+    category: productData?.category || '',
+    stage: productData?.stage || '',
+    description: productData?.description || '',
+    targetProblem: productData?.targetProblem || ''
   });
 
   // Foundation Versioning System
@@ -46,7 +55,7 @@ const EMUDashboardV3 = ({ startView = 'onboarding' }: EMUDashboardV3Props) => {
   });
 
   // Foundation State with Confidence Scoring
-  const [, setFoundationStatus] = useState('pending'); // 'pending', 'extracting', 'validating', 'locked', 'uncertain'
+  const [foundationStatus, setFoundationStatus] = useState('pending'); // 'pending', 'extracting', 'validating', 'locked', 'uncertain'
   const [foundationConfidence, setFoundationConfidence] = useState({
     overall: 0,
     painPoints: 0,
@@ -116,7 +125,13 @@ const EMUDashboardV3 = ({ startView = 'onboarding' }: EMUDashboardV3Props) => {
     challengedBy: [] as string[]
   });
 
-
+  // Auto-extract foundation when productData is provided
+  useEffect(() => {
+    if (productData && foundationStatus === 'pending') {
+      extractFoundation();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productData]);
 
   // Foundation extraction logic
   const extractFoundation = async () => {

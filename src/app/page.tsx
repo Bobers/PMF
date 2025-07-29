@@ -17,10 +17,12 @@ interface ProductData {
 export default function Home() {
   const [version, setVersion] = useState<'onboarding' | 'v2' | 'v3' | 'product'>('v2');
   const [v2StartView, setV2StartView] = useState<'onboarding' | 'dashboard'>('dashboard');
+  const [productData, setProductData] = useState<ProductData | null>(null);
 
   const handleOnboardingComplete = (data: ProductData) => {
-    // Product data received from onboarding
-    console.log('Product onboarding completed:', data);
+    // Store product data and switch to V2
+    setProductData(data);
+    setV2StartView('dashboard');
     setVersion('v2');
   };
 
@@ -71,9 +73,9 @@ export default function Home() {
       {version === 'product' ? (
         <EMUOnboarding onComplete={handleOnboardingComplete} />
       ) : version === 'v2' ? (
-        <EMUDashboardV2 startView={v2StartView} />
+        <EMUDashboardV2 startView={v2StartView} productData={productData} />
       ) : version === 'v3' ? (
-        <EMUDashboardV3 startView="dashboard" />
+        <EMUDashboardV3 startView="dashboard" productData={productData} />
       ) : (
         <EMUOnboarding onComplete={handleOnboardingComplete} />
       )}

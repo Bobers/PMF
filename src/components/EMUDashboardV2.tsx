@@ -1,23 +1,32 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Target, Sparkles, RefreshCw, Edit2, Lock, Unlock, AlertCircle, CheckCircle2, Loader2, ChevronRight, Search, Lightbulb, TrendingUp, Award, Zap, Plus, Trash2, Save, X } from 'lucide-react';
 
 interface EMUDashboardV2Props {
   startView?: 'onboarding' | 'dashboard';
+  productData?: {
+    name: string;
+    category: string;
+    stage: string;
+    description: string;
+    targetProblem: string;
+  } | null;
 }
 
-const EMUDashboardV2 = ({ startView = 'onboarding' }: EMUDashboardV2Props) => {
-  // Navigation State
-  const [view, setView] = useState<'onboarding' | 'dashboard' | 'foundation-detail'>(startView); // 'onboarding', 'dashboard', 'foundation-detail'
+const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV2Props) => {
+  // Navigation State - if we have productData, skip onboarding
+  const [view, setView] = useState<'onboarding' | 'dashboard' | 'foundation-detail'>(
+    productData ? 'dashboard' : startView
+  );
   
-  // Product State
+  // Product State - initialize with productData if available
   const [productInfo, setProductInfo] = useState({
-    name: '',
-    category: '',
-    stage: '',
-    description: '',
-    targetProblem: ''
+    name: productData?.name || '',
+    category: productData?.category || '',
+    stage: productData?.stage || '',
+    description: productData?.description || '',
+    targetProblem: productData?.targetProblem || ''
   });
 
   // Foundation State
@@ -66,6 +75,14 @@ const EMUDashboardV2 = ({ startView = 'onboarding' }: EMUDashboardV2Props) => {
   const [editingPainPoint, setEditingPainPoint] = useState<{ id: string; pain: string; severity: number; description: string } | null>(null);
   const [editingAudience, setEditingAudience] = useState<{ id: string; segment: string; description: string; characteristics: string } | null>(null);
   const [editingSolution, setEditingSolution] = useState<{ id: string; solution: string; problems: string } | null>(null);
+
+  // Auto-extract foundation when productData is provided
+  useEffect(() => {
+    if (productData && foundationStatus === 'pending') {
+      extractFoundation();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [productData]);
 
   // EMU Phases (locked until foundation is complete)
   const phases = [
