@@ -297,13 +297,35 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
     
     await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // Mock extraction with individual items
+    // Step 1: Extract Early Adopter Personas first (Customer Discovery Phase 1)
+    setAudiences([
+      {
+        id: '1',
+        segment: "Non-marketing founders",
+        description: "Technical founders at B2B SaaS startups who are doing marketing themselves",
+        characteristics: ["1-20 employees", "No marketing hire", "$0-2M ARR", "Engineering/product background"],
+        isLocked: false,
+        isEditing: false,
+        isGenerating: false
+      },
+      {
+        id: '2',
+        segment: "First-time marketers",
+        description: "Junior marketers who are the first marketing hire at early-stage startups",
+        characteristics: ["0-3 years experience", "Report directly to founder", "Wearing multiple hats", "No senior guidance"],
+        isLocked: false,
+        isEditing: false,
+        isGenerating: false
+      }
+    ]);
+
+    // Step 2: Extract pain points specific to these personas
     setPainPoints([
       {
         id: '1',
         pain: "Lack of structured marketing process",
         severity: 8,
-        description: "Founders waste 10-15 hours weekly on scattered marketing efforts",
+        description: "Non-marketing founders waste 10-15 hours weekly on scattered marketing efforts",
         isLocked: false,
         isEditing: false,
         isGenerating: false
@@ -312,37 +334,16 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
         id: '2',
         pain: "No framework for decision making",
         severity: 7,
-        description: "Teams make random marketing choices without data",
+        description: "First-time marketers make random choices without proven methodology",
         isLocked: false,
         isEditing: false,
         isGenerating: false
       },
       {
         id: '3',
-        pain: "Missing critical elements",
+        pain: "Missing critical go-to-market elements",
         severity: 9,
-        description: "Companies launch without proper positioning or strategy",
-        isLocked: false,
-        isEditing: false,
-        isGenerating: false
-      }
-    ]);
-
-    setAudiences([
-      {
-        id: '1',
-        segment: "Non-marketing founders",
-        description: "Technical founders at B2B SaaS startups",
-        characteristics: ["1-20 employees", "No marketing hire", "$0-2M ARR"],
-        isLocked: false,
-        isEditing: false,
-        isGenerating: false
-      },
-      {
-        id: '2',
-        segment: "Junior marketers",
-        description: "First marketing hires lacking senior guidance",
-        characteristics: ["0-3 years experience", "Multiple responsibilities", "Need structure"],
+        description: "Both personas launch without proper positioning, messaging, or strategy",
         isLocked: false,
         isEditing: false,
         isGenerating: false
@@ -721,13 +722,16 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
         </div>
 
         <div className="max-w-6xl mx-auto px-6 py-8 space-y-6">
-          {/* Pain Points */}
+          {/* Early Adopter Personas - MUST COME FIRST (Customer Discovery Phase 1) */}
           <div className="bg-gray-900 rounded-lg border border-gray-800">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold">Specific Pain Points</h2>
+                <div>
+                  <h2 className="text-xl font-semibold">Early Adopter Personas</h2>
+                  <p className="text-sm text-gray-400 mt-1">Define WHO will be your first customers</p>
+                </div>
                 <button
-                  onClick={addPainPoint}
+                  onClick={addAudience}
                   className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
                 >
                   <Plus className="w-4 h-4" />
@@ -735,7 +739,7 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
               </div>
 
               <div className="space-y-3">
-                {painPoints.map((pain) => (
+                {audiences.map((audience) => (
                   <div key={pain.id} className={`bg-gray-800 rounded-lg p-4 ${pain.isLocked ? 'border border-green-600' : ''}`}>
                     {pain.isEditing && editingPainPoint?.id === pain.id ? (
                       <div className="space-y-3">
@@ -831,11 +835,14 @@ const EMUDashboardV2 = ({ startView = 'onboarding', productData }: EMUDashboardV
             </div>
           </div>
 
-          {/* Target Audience */}
+          {/* Pain Points - AFTER defining personas */}
           <div className="bg-gray-900 rounded-lg border border-gray-800">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold">Who Faces This Problem</h2>
+                <div>
+                  <h2 className="text-xl font-semibold">Specific Pain Points</h2>
+                  <p className="text-sm text-gray-400 mt-1">What problems do your early adopters face?</p>
+                </div>
                 <button
                   onClick={addAudience}
                   className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
