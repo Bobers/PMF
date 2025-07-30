@@ -4,12 +4,13 @@ import { useState, useEffect } from 'react';
 import EMUDashboardV2 from '@/components/EMUDashboardV2';
 import EMUDashboardV3 from '@/components/EMUDashboardV3';
 import EMUDashboardV4 from '@/components/EMUDashboardV4';
+import EMUDashboardV5 from '@/components/EMUDashboardV5';
 import EMUOnboarding from '@/components/EMUOnboarding';
 import Auth from '@/components/Auth';
 import UserMenu from '@/components/UserMenu';
 import { createClient } from '@/lib/supabase/client';
 import { useProjectData } from '@/hooks/useProjectData';
-import { Layers, GitBranch, Sparkles, Grid3X3 } from 'lucide-react';
+import { Layers, GitBranch, Sparkles, Grid3X3, FileCheck } from 'lucide-react';
 
 interface ProductData {
   name: string;
@@ -20,7 +21,7 @@ interface ProductData {
 }
 
 export default function Home() {
-  const [version, setVersion] = useState<'onboarding' | 'v2' | 'v3' | 'v4' | 'product'>('product');
+  const [version, setVersion] = useState<'onboarding' | 'v2' | 'v3' | 'v4' | 'v5' | 'product'>('product');
   const [v2StartView, setV2StartView] = useState<'onboarding' | 'dashboard'>('dashboard');
   const [user, setUser] = useState<{id: string; email?: string} | null>(null);
   const [loading, setLoading] = useState(true);
@@ -128,6 +129,17 @@ export default function Home() {
           <Grid3X3 className="w-4 h-4" />
           V4
         </button>
+        <button
+          onClick={() => setVersion('v5')}
+          className={`px-3 py-1.5 rounded flex items-center gap-2 transition-all ${
+            version === 'v5'
+              ? 'bg-purple-600 text-white'
+              : 'bg-gray-800 text-gray-400 hover:text-gray-200'
+          }`}
+        >
+          <FileCheck className="w-4 h-4" />
+          V5
+        </button>
         {user && (
           <>
             <div className="w-px h-6 bg-gray-700" />
@@ -148,6 +160,8 @@ export default function Home() {
         <EMUDashboardV3 startView="dashboard" productData={projectData} />
       ) : version === 'v4' ? (
         <EMUDashboardV4 />
+      ) : version === 'v5' ? (
+        <EMUDashboardV5 />
       ) : (
         <EMUOnboarding onComplete={handleOnboardingComplete} initialData={projectData} />
       )}
