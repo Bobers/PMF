@@ -22,7 +22,7 @@ interface ValidationStep {
   description: string;
   icon: React.ReactNode;
   status: 'not-started' | 'in-progress' | 'completed';
-  data?: any;
+  data?: Record<string, unknown>;
 }
 
 const initialSteps: ValidationStep[] = [
@@ -140,7 +140,6 @@ export default function Phase1Foundation() {
   const [definitions, setDefinitions] = useState('');
   const [assumptions, setAssumptions] = useState<string[]>(['']);
   const [biases, setBiases] = useState<string[]>(['']);
-  const [journeyPains, setJourneyPains] = useState<string[]>(['']);
 
   const updateStepStatus = (stepId: number, status: 'not-started' | 'in-progress' | 'completed') => {
     setSteps(prev => prev.map(step => 
@@ -148,7 +147,7 @@ export default function Phase1Foundation() {
     ));
   };
 
-  const saveStepData = (stepId: number, data: any) => {
+  const saveStepData = (stepId: number, data: Record<string, unknown>) => {
     setSteps(prev => prev.map(step => 
       step.id === stepId ? { ...step, data, status: 'completed' } : step
     ));
@@ -207,7 +206,7 @@ export default function Phase1Foundation() {
       case 2:
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Define 'Systematic Approach'</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Define &apos;Systematic Approach&apos;</h3>
             <p className="text-gray-600">
               Create specific, operational definitions for what a systematic validation process means.
             </p>
@@ -276,7 +275,7 @@ export default function Phase1Foundation() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Identify Personal Biases</h3>
             <p className="text-gray-600">
-              Acknowledge your founder's curse and personal biases that might affect your judgment.
+              Acknowledge your founder&apos;s curse and personal biases that might affect your judgment.
             </p>
             <div className="space-y-2">
               {biases.map((bias, index) => (
@@ -322,7 +321,7 @@ export default function Phase1Foundation() {
             <h3 className="text-lg font-semibold text-gray-900">{currentStep.title}</h3>
             <p className="text-gray-600">{currentStep.description}</p>
             <div className="p-8 bg-gray-50 rounded-lg text-center text-gray-500">
-              Step content for "{currentStep.title}" coming soon...
+              Step content for &quot;{currentStep.title}&quot; coming soon...
             </div>
             <button
               onClick={() => saveStepData(activeStep, {})}
