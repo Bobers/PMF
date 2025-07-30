@@ -15,7 +15,7 @@ import {
   MessageSquare,
   Lightbulb
 } from 'lucide-react';
-import HypothesisBuilder from './HypothesisBuilder';
+import AIHypothesisBuilder from './AIHypothesisBuilder';
 
 interface ValidationStep {
   id: number;
@@ -186,14 +186,13 @@ export default function Phase1Foundation() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Build Your Core Hypothesis</h3>
             <p className="text-gray-600">
-              Let&apos;s reverse-engineer your problem hypothesis from your solution idea.
+              AI will help you reverse-engineer your problem hypothesis from your product idea.
             </p>
-            <HypothesisBuilder
+            <AIHypothesisBuilder
               onComplete={(hypothesis, data) => {
                 setHypothesis(hypothesis);
                 saveStepData(1, { hypothesis, ...data });
               }}
-              initialData={steps[0]?.data as Record<string, string> || {}}
             />
           </div>
         );
