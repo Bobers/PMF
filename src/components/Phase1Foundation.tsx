@@ -184,8 +184,8 @@ export default function Phase1Foundation() {
       case 1:
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Build Your Core Hypothesis</h3>
-            <p className="text-gray-600">
+            <h3 className="text-lg font-semibold text-gray-100">Build Your Core Hypothesis</h3>
+            <p className="text-gray-400">
               AI will help you reverse-engineer your problem hypothesis from your product idea.
             </p>
             <AIHypothesisBuilder
@@ -329,23 +329,23 @@ export default function Phase1Foundation() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-950">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200">
+      <div className="bg-gray-900 border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Phase 1: Foundation & Problem Validation</h1>
-              <p className="text-gray-600 mt-1">Complete all 15 steps before moving to personas</p>
+              <h1 className="text-2xl font-bold text-gray-100">Phase 1: Foundation & Problem Validation</h1>
+              <p className="text-gray-400 mt-1">Complete all 15 steps before moving to personas</p>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <p className="text-sm text-gray-600">Progress</p>
-                <p className="text-2xl font-bold text-blue-600">{getCompletionPercentage()}%</p>
+                <p className="text-sm text-gray-400">Progress</p>
+                <p className="text-2xl font-bold text-purple-500">{getCompletionPercentage()}%</p>
               </div>
-              <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div className="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
                 <div 
-                  className="h-full bg-blue-600 transition-all duration-300"
+                  className="h-full bg-purple-600 transition-all duration-300"
                   style={{ width: `${getCompletionPercentage()}%` }}
                 />
               </div>
@@ -358,9 +358,9 @@ export default function Phase1Foundation() {
         <div className="grid grid-cols-12 gap-8">
           {/* Steps List */}
           <div className="col-span-4">
-            <div className="bg-white rounded-lg shadow-sm">
-              <div className="p-4 border-b border-gray-200">
-                <h2 className="font-semibold text-gray-900">Validation Steps</h2>
+            <div className="bg-gray-900 rounded-lg border border-gray-800">
+              <div className="p-4 border-b border-gray-800">
+                <h2 className="font-semibold text-gray-100">Validation Steps</h2>
               </div>
               <div className="p-2">
                 {steps.map((step) => (
@@ -368,7 +368,7 @@ export default function Phase1Foundation() {
                     key={step.id}
                     onClick={() => setActiveStep(step.id)}
                     className={`w-full text-left px-3 py-3 rounded-lg flex items-center gap-3 transition-all
-                      ${activeStep === step.id ? 'bg-blue-50 text-blue-700' : 'hover:bg-gray-50'}`}
+                      ${activeStep === step.id ? 'bg-purple-900/20 text-purple-400' : 'hover:bg-gray-800'}`}
                   >
                     <div className="flex-shrink-0">
                       {step.status === 'completed' ? (
@@ -381,14 +381,14 @@ export default function Phase1Foundation() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className={`text-sm font-medium ${
-                        activeStep === step.id ? 'text-blue-700' : 'text-gray-900'
+                        activeStep === step.id ? 'text-purple-400' : 'text-gray-200'
                       }`}>
                         {step.id}. {step.title}
                       </p>
                       <p className="text-xs text-gray-500 truncate">{step.description}</p>
                     </div>
                     {activeStep === step.id && (
-                      <ChevronRight className="w-4 h-4 text-blue-600" />
+                      <ChevronRight className="w-4 h-4 text-purple-400" />
                     )}
                   </button>
                 ))}
@@ -398,19 +398,19 @@ export default function Phase1Foundation() {
 
           {/* Step Content */}
           <div className="col-span-8">
-            <div className="bg-white rounded-lg shadow-sm p-6">
+            <div className="bg-gray-900 rounded-lg border border-gray-800 p-6">
               {renderStepContent()}
             </div>
 
             {/* Saved Data Preview */}
             {steps.filter(s => s.status === 'completed').length > 0 && (
-              <div className="mt-6 bg-white rounded-lg shadow-sm p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Completed Steps Summary</h3>
+              <div className="mt-6 bg-gray-900 rounded-lg border border-gray-800 p-6">
+                <h3 className="text-lg font-semibold text-gray-100 mb-4">Completed Steps Summary</h3>
                 <div className="space-y-4">
                   {steps.filter(s => s.status === 'completed').map(step => (
                     <div key={step.id} className="border-l-4 border-green-500 pl-4">
-                      <h4 className="font-medium text-gray-900">{step.title}</h4>
-                      <pre className="text-sm text-gray-600 mt-1 whitespace-pre-wrap">
+                      <h4 className="font-medium text-gray-200">{step.title}</h4>
+                      <pre className="text-sm text-gray-400 mt-1 whitespace-pre-wrap">
                         {JSON.stringify(step.data, null, 2)}
                       </pre>
                     </div>
