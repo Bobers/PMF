@@ -15,6 +15,7 @@ import {
   MessageSquare,
   Lightbulb
 } from 'lucide-react';
+import HypothesisBuilder from './HypothesisBuilder';
 
 interface ValidationStep {
   id: number;
@@ -183,23 +184,17 @@ export default function Phase1Foundation() {
       case 1:
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Document Your Core Hypothesis</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Build Your Core Hypothesis</h3>
             <p className="text-gray-600">
-              Write a clear statement about why you believe startups fail at achieving Product-Market Fit.
+              Let&apos;s reverse-engineer your problem hypothesis from your solution idea.
             </p>
-            <textarea
-              value={hypothesis}
-              onChange={(e) => setHypothesis(e.target.value)}
-              placeholder="Example: Startups fail at PMF because they lack systematic validation processes and rely too heavily on intuition rather than evidence-based decision making."
-              className="w-full h-32 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            <HypothesisBuilder
+              onComplete={(hypothesis, data) => {
+                setHypothesis(hypothesis);
+                saveStepData(1, { hypothesis, ...data });
+              }}
+              initialData={steps[0]?.data as Record<string, string> || {}}
             />
-            <button
-              onClick={() => saveStepData(1, { hypothesis })}
-              disabled={!hypothesis.trim()}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
-            >
-              Save & Continue
-            </button>
           </div>
         );
 
