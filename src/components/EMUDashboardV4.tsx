@@ -8,7 +8,7 @@ import { ChevronRight, Home, Users, Target, Lightbulb, Building, TrendingUp, Roc
 interface ChunkNode {
   id: string;
   label: string;
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   value?: string;
   children?: ChunkNode[];
   description?: string;
@@ -161,7 +161,6 @@ export default function EMUDashboardV4() {
     currentView: 'foundation'
   });
 
-  const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   // Get current node based on path
   const getCurrentNode = (): ChunkNode | null => {
@@ -184,7 +183,6 @@ export default function EMUDashboardV4() {
         currentPath: [chunkId],
         currentView: 'section'
       });
-      setExpandedSection(chunkId);
     } else {
       setNavState({
         ...navState,
@@ -201,7 +199,6 @@ export default function EMUDashboardV4() {
         currentPath: [],
         currentView: 'foundation'
       });
-      setExpandedSection(null);
     } else {
       setNavState({
         ...navState,
